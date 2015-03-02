@@ -1,0 +1,54 @@
+<!DOCTYPE>
+<html>
+  <head>
+    <title></title>
+    <style type="text/css">
+body {
+    background-color: #fff;
+    margin: 0;
+}
+
+.centered {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#container {
+    width: 768px;
+    height: 768px;
+}
+
+#status_label {
+    position: absolute;
+    top: 768px;
+    width: 768px;
+    color: black;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 1.5em;
+    text-align: center;
+    pointer-events: none;
+}
+
+#drawing_canvas {
+    position: absolute;
+}
+</style>
+  </head>
+  <body>
+<div id="container" class="centered">
+  <canvas id="canvas"></canvas>
+  <div id="status_label">loading...</div>
+</div>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/p2.js/0.6.0/p2.min.js"></script>
+<script src="Maths.js"></script>
+<script src="Particle.js"></script>
+<script src="Arrow.js"></script>
+<script src="Wheel.js"></script>
+<script src="script.js"></script>
+  </body>
+</html>
