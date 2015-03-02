@@ -90,11 +90,12 @@ function checkEndDrag(e) {
     mouseConstraint = null;
 
     if (wheelSpinning === false && wheelStopped === true) {
-      if (Math.abs(wheel.body.angularVelocity) > 7.5) {
+      if (Math.abs(wheel.body.angularVelocity) > 5) {
         wheelSpinning = true;
         wheelStopped = false;
         console.log('good spin');
-        statusLabel.innerHTML = '...clack clack clack clack clack clack...'
+        statusLabel.innerHTML = '...clack clack clack clack clack clack...';
+        wheel.sound.play();
       } else {
         console.log('sissy');
         statusLabel.innerHTML = 'Come on, you can spin harder than that.'
@@ -134,8 +135,9 @@ function initPhysics() {
     arrowY = wheelY + wheelRadius + 0.625;
 
   wheel = new Wheel(wheelX, wheelY, wheelRadius, 32, 0.25, 7.5);
-  wheel.body.angle = (Math.PI / 32.5);
+  wheel.body.angle = 0;
   wheel.body.angularVelocity = 0;
+  wheel.initAudio();
   arrow = new Arrow(arrowX, arrowY, 0.5, 1.5);
   mouseBody = new p2.Body();
 
@@ -169,7 +171,7 @@ function update() {
   world.step(timeStep * 0.5);
 
   if (wheelSpinning === true && wheelStopped === false &&
-    wheel.body.angularVelocity < 1 && arrow.hasStopped()) {
+    Math.abs(wheel.body.angularVelocity) < 0.01) {
 
     var win = wheel.gotLucky();
 

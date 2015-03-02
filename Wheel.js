@@ -21,9 +21,8 @@ Wheel.prototype = {
       mass: 1,
       position: [this.x, this.y]
     });
-    this.body.angularDamping = 0.05;
+    this.body.angularDamping = 0.32;
     this.body.addShape(new p2.Circle(this.radius));
-    this.body.shapes[0].sensor = true; //TODO use collision bits instead
 
     var axis = new p2.Body({
       position: [this.x, this.y]
@@ -34,6 +33,14 @@ Wheel.prototype = {
     world.addBody(this.body);
     world.addBody(axis);
     world.addConstraint(constraint);
+  },
+  getScore: function() {
+    var currentRotation = wheel.body.angle % TWO_PI,
+      currentSegment = Math.floor(currentRotation / this.deltaPI);
+
+    currentSegment = currentSegment + this.segments / 2;
+    if (currentSegment > this.segments) currentSegment -= this.currentSegment;
+    return Math.floor(currentSegment);
   },
   gotLucky: function() {
     var currentRotation = wheel.body.angle % TWO_PI,
@@ -48,23 +55,36 @@ Wheel.prototype = {
     ctx.translate(this.pX, this.pY);
 
     ctx.beginPath();
-    ctx.fillStyle = '#DB9E36';
-    ctx.arc(0, 0, this.pRadius + 24, 0, TWO_PI);
+    ctx.fillStyle = 'black';
+    ctx.arc(0, 0, this.pRadius + 10, 0, TWO_PI);
     ctx.fill();
 
     ctx.rotate(-this.body.angle);
 
     for (var i = 0; i < this.segments; i++) {
-      ctx.fillStyle = (i % 2 === 0) ? '#BD4932' : '#FFFAD5';
+      ctx.fillStyle = (i % 2 === 0) ? 'yellow' : '#293133';
       ctx.beginPath();
       ctx.arc(0, 0, this.pRadius, i * this.deltaPI, (i + 1) * this.deltaPI);
       ctx.lineTo(0, 0);
       ctx.closePath();
       ctx.fill();
     }
+    for (var i = 0; i < this.segments; i++) {
+      ctx.save();
+      ctx.rotate(i * this.deltaPI + this.deltaPI / 2);
+      ctx.textAlign = "center";
+      ctx.fillStyle = 'red';
+      ctx.fillText(i, 0, 200);
+      ctx.restore();
+    }
 
     ctx.fillStyle = '#401911';
 
     ctx.restore();
+  },
+  initAudio: function() {
+    var sound = document.createElement('audio');
+    sound.setAttribute('src', 'http://bramp.net/javascript/wheel.mp3');
+    this.sound = sound;
   }
 };

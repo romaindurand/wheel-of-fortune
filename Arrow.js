@@ -35,18 +35,12 @@ Arrow.prototype = {
 
         return shape;
     },
-    hasStopped:function() {
-        var angle = Math.abs(this.body.angle % TWO_PI);
-
-        return (angle < 1e-3 || (TWO_PI - angle) < 1e-3);
-    },
     update:function() {
 
     },
     draw:function() {
         ctx.save();
         ctx.translate(this.pX, this.pY);
-        ctx.rotate(-this.body.angle);
 
         ctx.fillStyle = '#401911';
 
