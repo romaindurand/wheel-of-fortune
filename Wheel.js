@@ -11,7 +11,7 @@ function Wheel(x, y, radius, segments) {
   this.pY = (physicsHeight - this.y) * ppm;
   this.pRadius = this.radius * ppm;
 
-  this.deltaPI = TWO_PI / this.segments;
+  this.deltaPI = TWO_PI / this.segments.length;
 
   this.createBody();
 }
@@ -35,11 +35,11 @@ Wheel.prototype = {
     world.addConstraint(constraint);
   },
   getScore: function() {
-    var currentRotation = wheel.body.angle % TWO_PI,
+    var currentRotation = (wheel.body.angle + this.deltaPI/2) % TWO_PI,
       currentSegment = Math.floor(currentRotation / this.deltaPI);
 
-    currentSegment = currentSegment + this.segments / 2;
-    if (currentSegment > this.segments) currentSegment -= this.currentSegment;
+    //currentSegment = currentSegment + this.segments.length / 2;
+    //if (currentSegment > this.segments.length) currentSegment -= this.segments.length;
     return Math.floor(currentSegment);
   },
   gotLucky: function() {
@@ -61,17 +61,17 @@ Wheel.prototype = {
 
     ctx.rotate(-this.body.angle);
 
-    for (var i = 0; i < this.segments; i++) {
-      ctx.fillStyle = (i % 2 === 0) ? 'yellow' : '#293133';
+    for (var i = 0; i < this.segments.length; i++) {
+      ctx.fillStyle = this.segments[i].color;
       ctx.beginPath();
       ctx.arc(0, 0, this.pRadius, i * this.deltaPI, (i + 1) * this.deltaPI);
       ctx.lineTo(0, 0);
       ctx.closePath();
       ctx.fill();
     }
-    for (var i = 0; i < this.segments; i++) {
+    for (var i = 0; i < this.segments.length; i++) {
       ctx.save();
-      ctx.rotate(i * this.deltaPI + this.deltaPI / 2);
+      ctx.rotate(i * this.deltaPI);
       ctx.textAlign = "center";
       ctx.fillStyle = 'red';
       ctx.fillText(i, 0, 200);

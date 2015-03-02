@@ -81,6 +81,7 @@ function checkStartDrag(e) {
     wheelSpinning = false;
     wheelStopped = true;
     statusLabel.innerHTML = "Impatience will not be rewarded.";
+    wheel.sound.pause();
   }
 }
 
@@ -90,15 +91,19 @@ function checkEndDrag(e) {
     mouseConstraint = null;
 
     if (wheelSpinning === false && wheelStopped === true) {
+      //adapt angularVelocity to tend
+      //wheel.body.angularVelocity = 16;
+      console.log(wheel.body.angularVelocity);
+
       if (Math.abs(wheel.body.angularVelocity) > 5) {
         wheelSpinning = true;
         wheelStopped = false;
-        console.log('good spin');
         statusLabel.innerHTML = '...clack clack clack clack clack clack...';
+        wheel.sound.currentTime = 0;
         wheel.sound.play();
       } else {
-        console.log('sissy');
         statusLabel.innerHTML = 'Come on, you can spin harder than that.'
+        wheel.sound.pause();
       }
     }
   }
@@ -133,8 +138,31 @@ function initPhysics() {
     wheelY = wheelRadius + 4,
     arrowX = wheelX,
     arrowY = wheelY + wheelRadius + 0.625;
-
-  wheel = new Wheel(wheelX, wheelY, wheelRadius, 32, 0.25, 7.5);
+    var segments = [{
+      label: 'sirius',
+      color: 'blue'
+    },
+    {
+      label: 'zackers',
+      color: 'red'
+    },
+    {
+      label: 'poringkiller',
+      color: 'black'
+    },
+    {
+      label: 'romaindurand',
+      color: 'white'
+    },
+    {
+      label: 'eleven',
+      color: 'yellow'
+    },
+    {
+      label: 'angular',
+      color: 'green'
+    }];
+  wheel = new Wheel(wheelX, wheelY, wheelRadius, segments, 0.25, 7.5);
   wheel.body.angle = 0;
   wheel.body.angularVelocity = 0;
   wheel.initAudio();
