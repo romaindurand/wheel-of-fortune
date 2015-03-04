@@ -39,22 +39,26 @@ var planets = [{
   shortName: 'Asgard',
   name: 'Racoons of Asgard',
   icon: 'rocket.png',
-  color: 'yellow'
+  color: 'yellow',
+  id: 0
 }, {
   shortName: 'SchizoCats',
   name: 'SchizoCats',
   icon: 'rocket.png',
-  color: 'blue'
+  color: 'blue',
+  id: 1
 }, {
   shortName: 'Duck Invaders',
   name: 'Duck Invaders',
   icon: 'rocket.png',
-  color: 'green'
+  color: 'green',
+  id: 2
 }, {
   shortName: 'Donut Factory',
   name: 'Donut Factory',
   icon: 'rocket.png',
-  color: 'white'
+  color: 'white',
+  id: 3
 }];
 
 var segments = [{

@@ -13,17 +13,76 @@ window.onload = function() {
 };
 
 function initNavigation() {
-  
+
+  var lever = '<div class="switch">' +
+    '<label>' +
+    'Off' +
+    '<input type="checkbox">' +
+    '<span class="lever"></span>' +
+    'On' +
+    '</label>' +
+    '</div>';
+  var items = document.querySelectorAll('.collection-item');
+  for (var i = 0; i < items.length; i++) {
+    items[i].textContent = planets[i].name;
+    var div = document.createElement('div');
+    div.innerHTML = lever;
+    var elements = div.firstChild;
+    items[i].appendChild(elements);
+  }
+  items = document.querySelectorAll('.switch input');
+  for (var i = 0; i < items.length; i++) {
+    items[i].setAttribute("data-planet", i);
+    items[i].addEventListener('change', function(e) {
+      // debugger;
+      if (e.target.checked) {
+        initSegments(getActivePlanets());
+        wheel.segments = segments;
+      } else {
+        var planet = e.target.getAttribute('data-planet');
+        _.remove(wheel.segments, function(currentObject) {
+          return currentObject.id == planet;
+        });
+      }
+      wheel.deltaPI = TWO_PI / wheel.segments.length;
+    });
+  }
+
+  function getActivePlanets() {
+    var items = document.querySelectorAll('.switch input');
+    var result = [];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].checked) {
+        result.push(planets[i].id);
+      }
+    }
+    return result;
+  }
 }
 
-function initSegments() {
+function initSegments(activePlanets) {
   segments = [];
   for (var i = 0; i < 3; i++) {
-    for (var planet of planets) {
-      segments.push({
-        label: planet.shortName,
-        color: planet.color
-      })
+    for (var j = 0; j < planets.length; j++) {
+      if (activePlanets) {
+        if (activePlanets.indexOf(j) != -1) {
+          var planet = planets[j];
+          segments.push({
+            label: planet.shortName,
+            color: planet.color,
+            id: planet.id
+          });
+        }
+
+      } else {
+        var planet = planets[j];
+        segments.push({
+          label: planet.shortName,
+          color: planet.color,
+          id: planet.id
+        })
+      }
+
     }
   }
 }
