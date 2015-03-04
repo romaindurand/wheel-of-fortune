@@ -2,6 +2,7 @@
 <html>
   <head>
     <title></title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/css/materialize.min.css">
     <style type="text/css">
 body {
     background-color: #fff;
@@ -40,15 +41,59 @@ body {
     background-position: center;
     background-size: cover;
 }
+#menu {
+  width: 200px;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: -200px;
+  z-index: 10;
+  box-shadow: 5px 0 10px black;
+  background-color: white;
+  transition: left 1s;
+}
+#menu.active {
+  left: 0;
+}
+#menu_button {
+  position: absolute;
+  left: 200px;
+  height: 48px;
+  width: 48px;
+  background-color: rgba(255, 255, 255, 1);
+}
+#menu_button:hover {
+  cursor: pointer;
+}
 </style>
   </head>
   <body>
+  <div id="menu">
+    <div id="menu_button"><img src="ic_menu_48px.svg"></div>
+
+    <div class="collection">
+        <a href="#!" class="collection-item">Alvin 
+        <div class="switch">
+    <label>
+      Off
+      <input type="checkbox">
+      <span class="lever"></span>
+      On
+    </label>
+  </div></a>
+        <a href="#!" class="collection-item">Alvin</a>
+        <a href="#!" class="collection-item">Alvin</a>
+        <a href="#!" class="collection-item">Alvin</a>
+      </div>
+  </div>
 <div id="container" class="centered">
   <canvas id="canvas"></canvas>
-  <div id="status_label">loading...</div>
+  <div id="status_label"></div>
 </div>
 
 <script src="http://cdnjs.cloudflare.com/ajax/libs/p2.js/0.6.0/p2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/js/materialize.min.js"></script>
+<script src="config.js"></script>
 <script src="Maths.js"></script>
 <script src="Particle.js"></script>
 <script src="Arrow.js"></script>

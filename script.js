@@ -1,48 +1,53 @@
-const TWO_PI = Math.PI * 2;
-const HALF_PI = Math.PI * 0.5;
-// canvas settings
-var viewWidth = 768,
-  viewHeight = 768,
-  viewCenterX = viewWidth * 0.5,
-  viewCenterY = viewHeight * 0.5,
-  drawingCanvas = document.getElementById("canvas"),
-  ctx,
-  timeStep = (1 / 60),
-  time = 0;
-
-var ppm = 24, // pixels per meter
-  physicsWidth = viewWidth / ppm,
-  physicsHeight = viewHeight / ppm,
-  physicsCenterX = physicsWidth * 0.5,
-  physicsCenterY = physicsHeight * 0.5;
-
-var world;
-
-var wheel,
-  arrow,
-  blocker,
-  mouseBody,
-  mouseConstraint;
-
-var arrowMaterial,
-  pinMaterial,
-  contactMaterial;
-
-var wheelSpinning = false,
-  wheelStopped = true;
-
-var particles = [];
-
-var statusLabel = document.getElementById('status_label');
-
 window.onload = function() {
+  initSegments();
   initDrawingCanvas();
   initPhysics();
-
+  initNavigation();
   requestAnimationFrame(loop);
 
-  statusLabel.innerHTML = 'Give it a good spin!';
+  var menuButton = document.getElementById("menu_button");
+
+  menuButton.addEventListener('click', function(evt) {
+    document.getElementById('menu').classList.toggle('active');
+  });
 };
+
+function initNavigation() {
+  
+}
+
+function initSegments() {
+  segments = [];
+  for (var i = 0; i < 3; i++) {
+    for (var planet of planets) {
+      segments.push({
+        label: planet.shortName,
+        color: planet.color
+      })
+    }
+  }
+}
+
+function initPhysics() {
+  world = new p2.World();
+  world.solver.iterations = 100;
+  world.solver.tolerance = 0;
+
+  var wheelRadius = 8,
+    wheelX = physicsCenterX,
+    wheelY = wheelRadius + 4,
+    arrowX = wheelX + wheelRadius + 1.3,
+    arrowY = wheelY;
+
+  wheel = new Wheel(wheelX, wheelY, wheelRadius, segments, 0.25, 7.5);
+  wheel.body.angle = 0;
+  wheel.body.angularVelocity = 0;
+  wheel.initAssets();
+  arrow = new Arrow(arrowX, arrowY, 1.5, 0.5);
+  mouseBody = new p2.Body();
+
+  world.addBody(mouseBody);
+}
 
 function initDrawingCanvas() {
   drawingCanvas.width = viewWidth;
@@ -91,11 +96,18 @@ function checkEndDrag(e) {
     mouseConstraint = null;
 
     if (wheelSpinning === false && wheelStopped === true) {
-      //adapt angularVelocity to tend
-      //wheel.body.angularVelocity = 16;
-      console.log(wheel.body.angularVelocity);
 
       if (Math.abs(wheel.body.angularVelocity) > 5) {
+
+        //adapt angularVelocity to tend toward 16
+        var targetSpeed = 16;
+
+        targetSpeed = wheel.body.angularVelocity > 0 ? targetSpeed : -targetSpeed;
+        var velocity = wheel.body.angularVelocity;
+        var diff = targetSpeed - velocity;
+        wheel.body.angularVelocity = velocity + diff / 1.5;
+        console.log('initial velocity : ' + velocity + ' adapted to ' + wheel.body.angularVelocity);
+
         wheelSpinning = true;
         wheelStopped = false;
         statusLabel.innerHTML = '...clack clack clack clack clack clack...';
@@ -111,66 +123,15 @@ function checkEndDrag(e) {
 
 function getPhysicsCoord(e) {
   var rect = drawingCanvas.getBoundingClientRect(),
-    x = (e.clientX - rect.left) / ppm,
-    y = physicsHeight - (e.clientY - rect.top) / ppm;
+    clientX = e.clientX || e.touches[0].clientX,
+    clientY = e.clientY || e.touches[0].clientY,
+    x = (clientX - rect.left) / ppm,
+    y = physicsHeight - (clientY - rect.top) / ppm;
 
   return {
     x: x,
     y: y
   };
-}
-
-function initPhysics() {
-  world = new p2.World();
-  world.solver.iterations = 100;
-  world.solver.tolerance = 0;
-
-  arrowMaterial = new p2.Material();
-  pinMaterial = new p2.Material();
-  contactMaterial = new p2.ContactMaterial(arrowMaterial, pinMaterial, {
-    friction: 0.0,
-    restitution: 0.1
-  });
-  world.addContactMaterial(contactMaterial);
-
-  var wheelRadius = 8,
-    wheelX = physicsCenterX,
-    wheelY = wheelRadius + 4,
-    arrowX = wheelX,
-    arrowY = wheelY + wheelRadius + 0.625;
-    var segments = [{
-      label: 'sirius',
-      color: 'blue'
-    },
-    {
-      label: 'zackers',
-      color: 'red'
-    },
-    {
-      label: 'poringkiller',
-      color: 'black'
-    },
-    {
-      label: 'romaindurand',
-      color: 'white'
-    },
-    {
-      label: 'eleven',
-      color: 'yellow'
-    },
-    {
-      label: 'angular',
-      color: 'green'
-    }];
-  wheel = new Wheel(wheelX, wheelY, wheelRadius, segments, 0.25, 7.5);
-  wheel.body.angle = 0;
-  wheel.body.angularVelocity = 0;
-  wheel.initAudio();
-  arrow = new Arrow(arrowX, arrowY, 0.5, 1.5);
-  mouseBody = new p2.Body();
-
-  world.addBody(mouseBody);
-
 }
 
 function spawnPartices() {
@@ -192,17 +153,13 @@ function update() {
     }
   });
 
-  // p2 does not support continuous collision detection :(
-  // but stepping twice seems to help
-  // considering there are only a few bodies, this is ok for now.
-  world.step(timeStep * 0.5);
+
+  //world.step(timeStep * 0.5);
   world.step(timeStep * 0.5);
 
-  if (wheelSpinning === true && wheelStopped === false &&
-    Math.abs(wheel.body.angularVelocity) < 0.01) {
+  if (wheelSpinning === true && wheelStopped === false && Math.abs(wheel.body.angularVelocity) < 0.05) {
 
-    var win = wheel.gotLucky();
-
+    var win = wheel.getScore();
     wheelStopped = true;
     wheelSpinning = false;
 

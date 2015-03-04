@@ -21,7 +21,7 @@ Wheel.prototype = {
       mass: 1,
       position: [this.x, this.y]
     });
-    this.body.angularDamping = 0.32;
+    this.body.angularDamping = 0.6;
     this.body.addShape(new p2.Circle(this.radius));
 
     var axis = new p2.Body({
@@ -35,31 +35,31 @@ Wheel.prototype = {
     world.addConstraint(constraint);
   },
   getScore: function() {
-    var currentRotation = (wheel.body.angle + this.deltaPI/2) % TWO_PI,
-      currentSegment = Math.floor(currentRotation / this.deltaPI);
+    var currentRotation = wheel.body.angle % TWO_PI;
+    //currentRotation += this.deltaPI / 2; // offset 
+    if (currentRotation < 0) currentRotation += TWO_PI; // positive value
 
-    //currentSegment = currentSegment + this.segments.length / 2;
-    //if (currentSegment > this.segments.length) currentSegment -= this.segments.length;
-    return Math.floor(currentSegment);
-  },
-  gotLucky: function() {
-    var currentRotation = wheel.body.angle % TWO_PI,
-      currentSegment = Math.floor(currentRotation / this.deltaPI);
+    var currentSegment = Math.floor(currentRotation / this.deltaPI);
 
-    return (currentSegment % 2 === 0);
+    return currentSegment;
   },
   draw: function() {
     // TODO this should be cached in a canvas, and drawn as an image
-    // also, more doodads
     ctx.save();
     ctx.translate(this.pX, this.pY);
 
     ctx.beginPath();
     ctx.fillStyle = 'black';
-    ctx.arc(0, 0, this.pRadius + 10, 0, TWO_PI);
+    ctx.arc(0, 0, this.pRadius + 20, 0, TWO_PI);
     ctx.fill();
 
     ctx.rotate(-this.body.angle);
+
+    this.drawSegments();
+
+    ctx.restore();
+  },
+  drawSegments: function() {
 
     for (var i = 0; i < this.segments.length; i++) {
       ctx.fillStyle = this.segments[i].color;
@@ -69,22 +69,28 @@ Wheel.prototype = {
       ctx.closePath();
       ctx.fill();
     }
+
     for (var i = 0; i < this.segments.length; i++) {
       ctx.save();
-      ctx.rotate(i * this.deltaPI);
+      ctx.rotate(-HALF_PI);
+      ctx.rotate(i * this.deltaPI + this.deltaPI/2);
+      //ctx.rotate(-this.deltaPI/this.segments.length);
       ctx.textAlign = "center";
-      ctx.fillStyle = 'red';
-      ctx.fillText(i, 0, 200);
+      ctx.fillStyle = 'yellow';
+      ctx.fillText(this.segments[i].label, 0, 205);
+      // if(this.segments[i].type)
+      ctx.drawImage(this.img.rocket, -this.img.rocket.width / 2, 100);
       ctx.restore();
     }
-
-    ctx.fillStyle = '#401911';
-
-    ctx.restore();
   },
-  initAudio: function() {
+  initAssets: function() {
     var sound = document.createElement('audio');
     sound.setAttribute('src', 'http://bramp.net/javascript/wheel.mp3');
     this.sound = sound;
+
+    var img = new Image(); // Create new img element
+    img.src = 'rocket.png'; // Set source path
+    this.img = {};
+    this.img.rocket = img;
   }
 };
