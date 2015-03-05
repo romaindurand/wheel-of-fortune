@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.95.3/css/materialize.min.css">
     <style type="text/css">
 body {
-    background-color: #fff;
+    background-color: #283332;
     margin: 0;
 }
 
@@ -20,26 +20,41 @@ body {
 
 #container {
     width: 768px;
-    height: 768px;
-}
-
-#status_label {
-    position: absolute;
-    top: 768px;
-    width: 768px;
-    color: black;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 1.5em;
-    text-align: center;
-    pointer-events: none;
-}
-
-#canvas {
-    position: absolute;
     background-image: url(background.jpg);
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
+}
+
+#status_label {
+    position: absolute;
+    top: 0;
+    width: 768px;
+    color: white;
+    font-family: 'impact';
+    font-size: 20px;
+    text-align: center;
+    pointer-events: none;
+    font-weight: bolder;
+    text-transform: uppercase;
+    text-shadow: 0 0 5px black;
+    transition: all 2s;
+
+}
+
+#status_label.active {
+  top: 300px;
+  font-size: 40px;
+  text-shadow:
+   -3px -3px 0 #000,  
+    3px -3px 0 #000,
+    -3px 3px 0 #000,
+     3px 3px 0 #000;
+}
+
+#canvas {
+    position: absolute;
+
 }
 #menu {
   width: 400px;
@@ -60,7 +75,7 @@ body {
   left: 400px;
   height: 48px;
   width: 48px;
-  background-color: rgba(255, 255, 255, 1);
+  /*background-color: rgba(255, 255, 255, 1);*/
 }
 #menu_button:hover {
   cursor: pointer;
@@ -75,11 +90,7 @@ body {
     <div id="menu_button"><img src="ic_menu_48px.svg"></div>
 
     <div class="collection">
-        <a href="#!" class="collection-item"></a>
-        <a href="#!" class="collection-item"></a>
-        <a href="#!" class="collection-item"></a>
-        <a href="#!" class="collection-item"></a>
-      </div>
+    </div>
   </div>
 <div id="container" class="centered">
   <canvas id="canvas"></canvas>

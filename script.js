@@ -17,11 +17,21 @@ function initNavigation() {
   var lever = '<div class="switch">' +
     '<label>' +
     'Off' +
-    '<input type="checkbox">' +
+    '<input type="checkbox" checked>' +
     '<span class="lever"></span>' +
     'On' +
     '</label>' +
     '</div>';
+
+  var menuItem = '<a href="#!" class="collection-item"></a>';
+  var collection = document.querySelectorAll('div.collection');
+
+  for (var i = 0; i < planets.length; i++) {
+    var div = document.createElement('div');
+    div.innerHTML = menuItem;
+    var elements = div.firstChild;
+    collection[0].appendChild(elements);
+  }
   var items = document.querySelectorAll('.collection-item');
   for (var i = 0; i < items.length; i++) {
     items[i].textContent = planets[i].name;
@@ -132,7 +142,7 @@ function updateMouseBodyPosition(e) {
 
 function checkStartDrag(e) {
   if (world.hitTest(mouseBody.position, [wheel.body])[0]) {
-
+    statusLabel.className = '';
     mouseConstraint = new p2.RevoluteConstraint(mouseBody, wheel.body, {
       worldPivot: mouseBody.position,
       collideConnected: false
@@ -144,12 +154,13 @@ function checkStartDrag(e) {
   if (wheelSpinning === true) {
     wheelSpinning = false;
     wheelStopped = true;
-    statusLabel.innerHTML = "Impatience will not be rewarded.";
+    statusLabel.innerHTML = "Tout vient &agrave; point &agrave; qui sait attendre.";
     wheel.sound.pause();
   }
 }
 
 function checkEndDrag(e) {
+  
   if (mouseConstraint) {
     world.removeConstraint(mouseConstraint);
     mouseConstraint = null;
@@ -169,11 +180,11 @@ function checkEndDrag(e) {
 
         wheelSpinning = true;
         wheelStopped = false;
-        statusLabel.innerHTML = '...clack clack clack clack clack clack...';
+        statusLabel.innerHTML = '';
         wheel.sound.currentTime = 0;
         wheel.sound.play();
       } else {
-        statusLabel.innerHTML = 'Come on, you can spin harder than that.'
+        statusLabel.innerHTML = 'C\'&eacute;tait mou ! Essaie encore.'
         wheel.sound.pause();
       }
     }
@@ -212,29 +223,27 @@ function update() {
     }
   });
 
-
-  //world.step(timeStep * 0.5);
   world.step(timeStep * 0.5);
 
   if (wheelSpinning === true && wheelStopped === false && Math.abs(wheel.body.angularVelocity) < 0.05) {
 
-    var win = wheel.getScore();
     wheelStopped = true;
     wheelSpinning = false;
+    wheel.sound.pause();
+    wheel.soundFound.play();
 
     wheel.body.angularVelocity = 0;
+    var win = wheel.segments[wheel.getScore()];
 
     if (win) {
       spawnPartices();
-      statusLabel.innerHTML = 'Woop woop!'
-    } else {
-      statusLabel.innerHTML = 'Too bad! Invite a Facebook friend to try again!';
+      statusLabel.innerHTML = 'Bienvenue chez les <br />'+win.label+' !!!';
+      statusLabel.classList.toggle('active');
     }
   }
 }
 
 function draw() {
-  // ctx.fillStyle = '#fff';
   ctx.clearRect(0, 0, viewWidth, viewHeight);
 
   wheel.draw();

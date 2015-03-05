@@ -21,7 +21,7 @@ Wheel.prototype = {
       mass: 1,
       position: [this.x, this.y]
     });
-    this.body.angularDamping = 0.6;
+    this.body.angularDamping = 0.5;
     this.body.addShape(new p2.Circle(this.radius));
 
     var axis = new p2.Body({
@@ -87,6 +87,10 @@ Wheel.prototype = {
     var sound = document.createElement('audio');
     sound.setAttribute('src', 'http://bramp.net/javascript/wheel.mp3');
     this.sound = sound;
+
+    var soundFound = document.createElement('audio');
+    soundFound.setAttribute('src', 'result.mp3');
+    this.soundFound = soundFound;
 
     var img = new Image(); // Create new img element
     img.src = 'rocket.png'; // Set source path
